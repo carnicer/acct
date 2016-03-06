@@ -10,7 +10,7 @@ class Acct :
   W_AMOUNT = 12
   W_DATE = 10
   W_LINE = 2 * W_ACCT + W_AMOUNT + W_DATE
-  gssTypes = ( 'C_', 'P_' ) # valid account name types
+  gssTypes = ( 'D_', 'C_', 'P_' ) # valid account name types
 
   def __init__( self, sFile ) :
     try :
@@ -110,7 +110,34 @@ class Acct :
     print "%12s : %0.2f => %0.2f" % ( sAcctCre, lfSaldo, lfSaldo2 )
 
     # TODO : do something with sDate
+    print "--"
     
+
+  # TODO : sumar total caixes i total people/players
+  def displaySaldos( self ) :
+    lfGent = .0
+    lfGone = .0
+    lfCash = .0
+    print "========="
+    print "BALANCES:"
+    lListKeys = self.mDictSaldo.keys()
+    #print lListKeys
+    lListKeys2 = sorted( lListKeys )
+    #print lListKeys2
+    for lsAcct in lListKeys2 :
+      # no need to try:
+      lfSaldo = self.mDictSaldo[ lsAcct ]
+      print "%-12s : %0.2f" % ( lsAcct, lfSaldo )
+      if lsAcct[ 0 : 2 ] == "C_" : # caixa
+        lfCash += lfSaldo
+      elif lsAcct[ 0 : 2 ] == "D_" : # despesa
+        lfGone += lfSaldo
+      elif lsAcct[ 0 : 2 ] == "P_" : # people
+        lfGent += lfSaldo
+    print "========="
+    print "%-12s : %0.2f" % ( "total gent", lfGent )
+    print "%-12s : %0.2f" % ( "total desp", lfGone )
+    print "%-12s : %0.2f" % ( "total cash", lfCash )
 
   def inputLoop( self ) :
     liErrors = 0
@@ -123,4 +150,5 @@ if __name__ == "__main__" :
 
   lAcct = Acct( sys.argv[ 1 ] )
   lAcct.inputLoop()
+  lAcct.displaySaldos()
 
