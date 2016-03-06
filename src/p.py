@@ -59,12 +59,12 @@ class Acct :
     # TODO : check if ISO-format YYYY-MM-DD
     return liRet
 
-  def parseLine( self, sLine ) :
+  def parseLine( self, sLine0 ) :
     liRet = 0 # OK
+    # discard comment
+    sLine = sLine0.split( '#' )[ 0 ]
     liLen = len( sLine )
-    # TODO : allow comments at end of line => split by '#'
-    if sLine[ 0 ] == '#' : pass # OK, comment
-    elif liLen == 1 : pass # OK, empty line
+    if liLen <= 1 : pass # OK, empty or comment line
     elif liLen < Acct.W_LINE :
       print "line lenght %d not enough, minimum %d" % ( liLen, Acct.W_LINE )
       liRet = 1
