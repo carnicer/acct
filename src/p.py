@@ -100,7 +100,7 @@ class Acct :
       lfSaldo = 0.0
     lfSaldo2 = lfSaldo + lfAmount
     self.mDictSaldo[ sAcctDeb ] = lfSaldo2
-    print "%12s : %0.2f => %0.2f" % ( sAcctDeb, lfSaldo, lfSaldo2 )
+    print "%12s : %9.2f => %9.2f" % ( sAcctDeb, lfSaldo, lfSaldo2 )
     # TODO : display mov method?
 
     try :
@@ -109,7 +109,7 @@ class Acct :
       lfSaldo = 0.0
     lfSaldo2 = lfSaldo - lfAmount
     self.mDictSaldo[ sAcctCre ] = lfSaldo2
-    print "%12s : %0.2f => %0.2f" % ( sAcctCre, lfSaldo, lfSaldo2 )
+    print "%12s : %9.2f => %9.2f" % ( sAcctCre, lfSaldo, lfSaldo2 )
 
     # TODO : do something with sDate
     print "--"
@@ -129,7 +129,7 @@ class Acct :
     for lsAcct in lListKeys2 :
       # no need to try:
       lfSaldo = self.mDictSaldo[ lsAcct ]
-      print "%-12s : %0.2f" % ( lsAcct, lfSaldo )
+      print "%-12s : %9.2f" % ( lsAcct, lfSaldo )
       if lsAcct[ 0 : 2 ] == "C_" : # caixa
         lfCash += lfSaldo
       elif lsAcct[ 0 : 2 ] == "D_" : # despesa
@@ -137,9 +137,9 @@ class Acct :
       elif lsAcct[ 0 : 2 ] == "P_" : # people
         lfGent += lfSaldo
     print "========="
-    print "%-12s : %0.2f" % ( "total gent", lfGent )
-    print "%-12s : %0.2f" % ( "total desp", lfGone )
-    print "%-12s : %0.2f" % ( "total cash", lfCash )
+    print "%-12s : %9.2f" % ( "total gent", lfGent )
+    print "%-12s : %9.2f" % ( "total desp", lfGone )
+    print "%-12s : %9.2f" % ( "total cash", lfCash )
 
   def inputLoop( self ) :
     liErrors = 0
