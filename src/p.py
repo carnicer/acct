@@ -89,7 +89,9 @@ class Acct :
 
   def account( self, sAcctDeb, sAcctCre, sAmount, sDate ) :
 
-    print "accounting %s on %s(D) - %s(H)" % ( sAmount, sAcctDeb, sAcctCre )
+    self.miMov += 1
+    print "accounting mov %d" % ( self.miMov )
+    print "amount %s, on %s(D) - %s(H)" % ( sAmount, sAcctDeb, sAcctCre )
     lfAmount = float( sAmount ) # checked before
 
     try :
@@ -144,6 +146,7 @@ class Acct :
     for lsLine in self.mFile :
       liErrors += self.parseLine( lsLine )
     print "file processed, lines with errors:", liErrors
+    print "total movements =", self.miMov
 
 
 if __name__ == "__main__" :
