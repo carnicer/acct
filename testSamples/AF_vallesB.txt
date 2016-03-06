@@ -1,5 +1,5 @@
-# deure --- haver ----- import ---- data -----
+# deure --- haver ----- import ---- data ----- # comments -----
 
-P_PAULA     C_POT            40.00  2016-03-05
-C_POT       C_DELEGAT        40.00  2016-03-05
+P_PAULA     C_POT            40.00  2016-03-05 # paula paga 50 esmorzar, 40 pot
+C_POT       C_DELEGAT        40.00  2016-03-05 # delegat agafa pot
 
