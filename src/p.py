@@ -11,7 +11,7 @@ class Acct :
   W_AMOUNT = 12
   W_DATE = 10
   W_LINE = 2 * W_ACCT + W_AMOUNT + W_DATE
-  gssTypes = ( 'S_', 'D_', 'C_', 'P_', 'F_' ) # valid account name types
+  gssTypes = ( 'S_', 'D_', 'C_', 'P_', 'F_', 'X_' ) # valid account name types
 
   def __init__( self, sFile ) :
     try :
@@ -128,6 +128,7 @@ class Acct :
     lfCash = .0
     lfPend = .0
     lfStok = .0
+    lfExtl = .0
     print( "=========" )
     print( "BALANCES:" )
     lListKeys = self.mDictSaldo.keys()
@@ -149,12 +150,15 @@ class Acct :
         lfPend += lfSaldo
       elif lsAcctType == "S_" : # capital
         lfStok += lfSaldo
+      elif lsAcctType == "X_" : # eXternal
+        lfExtl += lfSaldo
       else :
         eprint( "unknown acct type '%s'" % lsAcctType )
         sys.exit( 1 )
     print( "=========" )
     print( "%-12s : %9.2f" % ( "total stock",  lfStok ) )
     print( "%-12s : %9.2f" % ( "total people", lfGent ) )
+    print( "%-12s : %9.2f" % ( "total xtrnal", lfExtl ) )
     print( "%-12s : %9.2f" % ( "total desp",   lfGone ) )
     print( "%-12s : %9.2f" % ( "total credit", lfPend ) )
     print( "%-12s : %9.2f" % ( "total cash",   lfCash ) )
