@@ -2,5 +2,23 @@
 
 C_POT       P_PAULA          40.00  2016-03-05 # paula paga 50 esmorzar, 40 pot
 C_DELEGAT   C_POT            40.00  2016-03-05 # delegat agafa pot
-#D_MATERIAL  C_DELEGAT        27.00  2016-03-05 # delegat compra masks
+C_DELEGAT   P_CLARAH         20.00  2016-04-02 # pot
+C_DELEGAT   P_CLARAM         20.00  2016-04-02 # pot
+C_DELEGAT   P_MAR            20.00  2016-04-02 # pot
+C_DELEGAT   P_GIGI           20.00  2016-04-02 # pot
+C_DELEGAT   P_BERTAC         20.00  2016-04-02 # pot
+C_DELEGAT   P_ANNA           20.00  2016-04-02 # pot
+D_BAR       C_DELEGAT        10.00  2016-04-02 # 3r temps j6
+D_BAR       C_DELEGAT        29.00  2016-04-30 # 3r temps j10
+C_DELEGAT   P_RITA           20.00  2016-06-04 # pot
+D_BAR       C_DELEGAT        10.00  2016-06-04 # 3r temps j14
+P_CLARAM    P_ANNA           55.10  2016-06-02 # dinar x 3 restaurant
+P_RITA      F_ATHC           10.00  2016-06-16 # arros Rita: 1G
+P_GIGI      F_ATHC           40.00  2016-06-16 # arros Gigi: 3G, 1N
+P_BERTAC    F_ATHC           40.00  2016-06-16 # arros BertaC: 1G, 3N
+P_CLARAM    F_ATHC           30.00  2016-06-16 # arros ClaraM: 3G
+P_ANNA      F_ATHC           20.00  2016-06-16 # arros Anna: 1G, 1N
+C_DELEGAT   P_BERTAG         20.00  2016-06-18 # pot
+P_ANNA      P_BERTAC         40.00  2016-06-18 # tickets arros BertaC
+P_PAULA     F_PAULA          20.00  2016-04-02 # sobrant pot Paula
 
