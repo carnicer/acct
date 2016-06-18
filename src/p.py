@@ -11,7 +11,7 @@ class Acct :
   W_AMOUNT = 12
   W_DATE = 10
   W_LINE = 2 * W_ACCT + W_AMOUNT + W_DATE
-  gssTypes = ( 'D_', 'C_', 'P_' ) # valid account name types
+  gssTypes = ( 'D_', 'C_', 'P_', 'F_' ) # valid account name types
 
   def __init__( self, sFile ) :
     try :
@@ -126,6 +126,7 @@ class Acct :
     lfGent = .0
     lfGone = .0
     lfCash = .0
+    lfPend = .0
     print( "=========" )
     print( "BALANCES:" )
     lListKeys = self.mDictSaldo.keys()
@@ -143,12 +144,15 @@ class Acct :
         lfGone += lfSaldo
       elif lsAcctType == "P_" : # people
         lfGent += lfSaldo
+      elif lsAcctType == "F_" : # factures
+        lfPend += lfSaldo
       else :
         eprint( "unknown acct type '%s'" % lsAcctType )
         sys.exit( 1 )
     print( "=========" )
     print( "%-12s : %9.2f" % ( "total pple", lfGent ) )
     print( "%-12s : %9.2f" % ( "total desp", lfGone ) )
+    print( "%-12s : %9.2f" % ( "total pend", lfPend ) )
     print( "%-12s : %9.2f" % ( "total cash", lfCash ) )
 
   def inputLoop( self ) :
