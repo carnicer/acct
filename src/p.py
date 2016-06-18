@@ -1,4 +1,5 @@
 #!/bin/python
+from __future__ import print_function
 
 import sys
 import getopt
@@ -16,11 +17,16 @@ class Acct :
     try :
       self.mFile = open( sFile )
     except :
-      print "FATAL, could not open file", sFile
+      print( "FATAL, could not open file " + sFile )
       sys.exit( 1 )
 
     self.miMov = 0
     self.mDictSaldo = {}
+
+
+  @staticmethod
+  def eprint( sErrorMsg ) :
+    print( sErrorMsg, file=sys.stderr )
 
 
   @staticmethod
@@ -29,10 +35,10 @@ class Acct :
     liLen = len( sVal )
     if liLen > Acct.W_ACCT :
       liRet = 1
-      print 'account name %s too long (%d), max is %d' % ( sVal, liLen, Acct.W_ACCT )
+      Acct.eprint( 'account name %s too long (%d), max is %d' % ( sVal, liLen, Acct.W_ACCT ) )
     elif sVal[ : 2 ] not in Acct.gssTypes :
       liRet = 1
-      print 'account name %s not valid, must start by %s' % ( sVal, Acct.gssTypes )
+      Acct.eprint( 'account name %s not valid, must start by %s' % ( sVal, Acct.gssTypes ) )
     return liRet
 
   @staticmethod
@@ -41,12 +47,12 @@ class Acct :
     liLen = len( sVal )
     if liLen > Acct.W_AMOUNT :
       liRet = 1
-      print 'amount %s too long (%d), max is %d' % ( sVal, liLen, Acct.W_AMOUNT )
+      Acct.eprint( 'amount %s too long (%d), max is %d' % ( sVal, liLen, Acct.W_AMOUNT ) )
     try :
       lfAmount = float( sVal )
     except :
       liRet = 1
-      print 'amount %s is not a floating point number' % ( sVal )
+      Acct.eprint( 'amount %s is not a floating point number' % ( sVal ) )
     return liRet
 
   @staticmethod
@@ -55,7 +61,7 @@ class Acct :
     liLen = len( sVal )
     if liLen > Acct.W_DATE :
       liRet = 1
-      print 'date %s too long (%d), max is %d' % ( sVal, liLen, Acct.W_AMOUNT )
+      Acct.eprint( 'date %s too long (%d), max is %d' % ( sVal, liLen, Acct.W_AMOUNT ) )
     # TODO : check if ISO-format YYYY-MM-DD
     return liRet
 
@@ -66,11 +72,10 @@ class Acct :
     liLen = len( sLine )
     if liLen <= 1 : pass # OK, empty or comment line
     elif liLen < Acct.W_LINE :
-      print "line lenght %d not enough, minimum %d" % ( liLen, Acct.W_LINE )
+      print( "line lenght %d not enough, minimum %d" % ( liLen, Acct.W_LINE ) )
       liRet = 1
     else : # now a real line
       lss = sLine.split()
-      #print lss
       lsAcctDeb = lss[ 0 ]
       lsAcctCre = lss[ 1 ]
       lsAmount  = lss[ 2 ]
@@ -80,8 +85,9 @@ class Acct :
       liRet += Acct.valAmnt( lsAmount )
       liRet += Acct.valDate( lsDate )
       if liRet > 0 :
-        print "reject line, contains %d format/content errors"
+        Acct.eprint( "FATAL. rejected line, contains %d format/content errors" )
         liRet = 1 # meaning 1 line with errors
+        sys.exit( 1 )
       else :
         self.account( lsAcctDeb, lsAcctCre, lsAmount, lsDate )
     return liRet
@@ -90,8 +96,8 @@ class Acct :
   def account( self, sAcctDeb, sAcctCre, sAmount, sDate ) :
 
     self.miMov += 1
-    print "accounting mov %d" % ( self.miMov )
-    print "amount %s, on %s(D) - %s(H)" % ( sAmount, sAcctDeb, sAcctCre )
+    print( "accounting mov %d" % ( self.miMov ) )
+    print( "amount %s, on %s(D) - %s(H)" % ( sAmount, sAcctDeb, sAcctCre ) )
     lfAmount = float( sAmount ) # checked before
 
     try :
@@ -100,7 +106,7 @@ class Acct :
       lfSaldo = 0.0
     lfSaldo2 = lfSaldo + lfAmount
     self.mDictSaldo[ sAcctDeb ] = lfSaldo2
-    print "%12s : %9.2f => %9.2f" % ( sAcctDeb, lfSaldo, lfSaldo2 )
+    print( "%12s : %9.2f => %9.2f" % ( sAcctDeb, lfSaldo, lfSaldo2 ) )
     # TODO : display mov method?
 
     try :
@@ -109,10 +115,10 @@ class Acct :
       lfSaldo = 0.0
     lfSaldo2 = lfSaldo - lfAmount
     self.mDictSaldo[ sAcctCre ] = lfSaldo2
-    print "%12s : %9.2f => %9.2f" % ( sAcctCre, lfSaldo, lfSaldo2 )
+    print( "%12s : %9.2f => %9.2f" % ( sAcctCre, lfSaldo, lfSaldo2 ) )
 
     # TODO : do something with sDate
-    print "--"
+    print( "--" )
     
 
   # TODO : sumar total caixes i total people/players
@@ -120,8 +126,8 @@ class Acct :
     lfGent = .0
     lfGone = .0
     lfCash = .0
-    print "========="
-    print "BALANCES:"
+    print( "=========" )
+    print( "BALANCES:" )
     lListKeys = self.mDictSaldo.keys()
     #print lListKeys
     lListKeys2 = sorted( lListKeys )
@@ -129,24 +135,28 @@ class Acct :
     for lsAcct in lListKeys2 :
       # no need to try:
       lfSaldo = self.mDictSaldo[ lsAcct ]
-      print "%-12s : %9.2f" % ( lsAcct, lfSaldo )
-      if lsAcct[ 0 : 2 ] == "C_" : # caixa
+      print( "%-12s : %9.2f" % ( lsAcct, lfSaldo ) )
+      lsAcctType = lsAcct[ 0 : 2 ]
+      if lsAcctType == "C_" : # caixa
         lfCash += lfSaldo
-      elif lsAcct[ 0 : 2 ] == "D_" : # despesa
+      elif lsAcctType == "D_" : # despesa
         lfGone += lfSaldo
-      elif lsAcct[ 0 : 2 ] == "P_" : # people
+      elif lsAcctType == "P_" : # people
         lfGent += lfSaldo
-    print "========="
-    print "%-12s : %9.2f" % ( "total gent", lfGent )
-    print "%-12s : %9.2f" % ( "total desp", lfGone )
-    print "%-12s : %9.2f" % ( "total cash", lfCash )
+      else :
+        eprint( "unknown acct type '%s'" % lsAcctType )
+        sys.exit( 1 )
+    print( "=========" )
+    print( "%-12s : %9.2f" % ( "total pple", lfGent ) )
+    print( "%-12s : %9.2f" % ( "total desp", lfGone ) )
+    print( "%-12s : %9.2f" % ( "total cash", lfCash ) )
 
   def inputLoop( self ) :
     liErrors = 0
     for lsLine in self.mFile :
       liErrors += self.parseLine( lsLine )
-    print "file processed, lines with errors:", liErrors
-    print "total movements =", self.miMov
+    print( "file processed, lines with errors: %d" % liErrors )
+    print( "total movements = %d" % self.miMov )
 
 
 if __name__ == "__main__" :
