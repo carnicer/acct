@@ -11,7 +11,6 @@ import sys
 import getopt
 from datetime import datetime, timedelta
 
-# TODO : allow reading data from stdin
 # TODO : only define in 1 place valid account types (use dict in displaySaldos)
 # TODO : add option to set initial and final dates to process
 # TODO : read balance with starting value for accounts
@@ -44,10 +43,14 @@ class Acct :
   gsFmtDate = "%Y-%m-%d"
   gsFmtDateUI = "yyyy-mm-dd"
 
-  def __init__( self, sFile ) :
-    try :
+  def __init__( self, sFile = None ) :
+    if sFile == None :
+      self.mFile = sys.stdin
+      print( "reading from stdin" )
+    else :
+     try :
       self.mFile = open( sFile )
-    except :
+     except :
       print( "FATAL, could not open file " + sFile )
       sys.exit( 1 )
 
@@ -217,6 +220,7 @@ class Acct :
 
   def inputLoop( self ) :
     liErrors = 0
+    print( "----------" )
     for lsLine in self.mFile :
       liErrors += self.parseLine( lsLine )
     print( "file processed, lines with errors: %d" % liErrors )
@@ -225,12 +229,11 @@ class Acct :
 
 if __name__ == "__main__" :
 
-  # TODO : use stdin?
   if len( sys.argv ) < 2 :
-    print( "FATAL: which file should I read from?" )
-    Acct.usage()
-    sys.exit( 1 )
-  lAcct = Acct( sys.argv[ 1 ] )
+    # use stdin
+    lAcct = Acct()
+  else :
+    lAcct = Acct( sys.argv[ 1 ] )
   lAcct.inputLoop()
   lAcct.displaySaldos()
 
