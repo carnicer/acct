@@ -255,17 +255,40 @@ class Acct :
   def parseDates( sDates ) :
 
     lDates = None # return value, default
+    lList = []
     lss = sDates.split( ':' )
+    print( lss )
     liS = len( lss )
     if liS == 1 : # 1 date (year/month)
       lDate = Acct.parseFlexDate( lss[ 0 ] )
       # TODO : add 1 day/month/year to 2nd date depending on len
-      lDates = ( lDate, lDate )
+      lList.append( lDate )
+      lList.append( lDate )
     elif liS == 2 : # 2 dates (year/month)
-      pass
-    else : # > 2 dates => invalid
-      pass
-
+      if len( lss[ 0 ] ) == len( lss[ 1 ] ) :
+        for lsDate in lss :
+          lDate = Acct.parseFlexDate( lsDate )
+          if not lDate == None :
+            lList.append( lDate )
+      else :
+        eprint( "FATAL: date range is not formed by 2 equal-length/format" )
+            
+    if len( lList ) == 2 :
+      liLen = len( lss[ 0 ] )
+      if liLen == 10 :
+        lTimeDelta = timedelta( days = 1 )
+        lDate2 = lDate + lTimeDelta
+      elif liLen == 7 :
+        liYear = lDate.year + 1
+        liMonth = lDate.month + 1
+        if liMonth > 12 :
+          liMonth -= 12
+          liYear = lDate.year + 1
+        lDate1 = lDate.replace( month = liMonth )
+        lDate2 = lDate1.replace( year = lDate.year + 1 )
+      elif liLen == 4 :
+        lDate2 = lDate.replace( year = lDate.year + 1 )
+      lDates = tuple( ( lList[ 0 ], lDate2 ) )
     return lDates
 
 
