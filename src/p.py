@@ -148,6 +148,24 @@ class Acct :
 
     self.miMov += 1
     print( "validating mov %d on file ..." % ( self.miMov ) )
+
+    # sDate is OK, was checked before
+    lDate = datetime.strptime( sDate, Acct.gsFmtDate )
+    # <, >= : 2n limit queda fora
+    if not Acct.gTupDateRange == None :
+     if lDate < Acct.gTupDateRange[ 0 ] or lDate >= Acct.gTupDateRange[ 1 ] :
+      print( "mov with date %s, outside date range limits" % sDate )
+      print( "-" )
+      return
+
+    print( "accounting mov %d" % ( self.miMovAcct ) )
+    if self.mDateIni == None : self.mDateIni = lDate
+    else :
+      if lDate < self.mDateIni : self.mDateIni = lDate
+    if self.mDateFin == None : self.mDateFin = lDate
+    else :
+      if lDate > self.mDateFin : self.mDateFin = lDate
+
     print( "amount %s, on %s(D) - %s(H)" % ( sAmount, sAcctDeb, sAcctCre ) )
     lfAmount = float( sAmount ) # checked before
 
@@ -168,22 +186,7 @@ class Acct :
     self.mDictSaldo[ sAcctCre ] = lfSaldo2
     print( "%12s : %9.2f => %9.2f" % ( sAcctCre, lfSaldo, lfSaldo2 ) )
 
-    # sDate is OK, was checked before
-    lDate = datetime.strptime( sDate, Acct.gsFmtDate )
-    # <, >= : 2n limit queda fora
-    if lDate < Acct.gTupDateRange[ 0 ] or lDate >= Acct.gTupDateRange[ 1 ] :
-      print( "mov with date %s, outside date range limits" % sDate )
-      print( "-" )
-      return
-
     self.miMovAcct += 1
-    print( "accounting mov %d" % ( self.miMovAcct ) )
-    if self.mDateIni == None : self.mDateIni = lDate
-    else :
-      if lDate < self.mDateIni : self.mDateIni = lDate
-    if self.mDateFin == None : self.mDateFin = lDate
-    else :
-      if lDate > self.mDateFin : self.mDateFin = lDate
 
     print( "--" )
     
@@ -217,6 +220,7 @@ class Acct :
     #print lListKeys
     lListKeys2 = sorted( lListKeys )
     #print lListKeys2
+    print( "=========" )
     for lsAcct in lListKeys2 :
       # no need to try:
       lfSaldo = self.mDictSaldo[ lsAcct ]
@@ -363,8 +367,7 @@ class Acct :
 
 if __name__ == "__main__" :
 
-  if len( sys.argv ) > 1 :
-    Acct.checkOptions( sys.argv[ 1 : ] )
+  Acct.checkOptions( sys.argv[ 1 : ] )
   if len( Acct.gsFiles ) == 0 :
     # use stdin
     lAcct = Acct()
