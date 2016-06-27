@@ -15,7 +15,6 @@ import getopt
 from datetime import datetime, timedelta
 
 # TODO : only define in 1 place valid account types (use dict in displaySaldos)
-# TODO : add option to set initial and final dates to process
 # TODO : read balance with starting value for accounts
 # TODO : process more than 1 movs file
 
@@ -63,6 +62,7 @@ class Acct :
       sys.exit( 1 )
 
     self.miMov = 0
+    self.miMovAcct = 0
     self.mDictSaldo = {}
     self.mDateIni = None
     self.mDateFin = None
@@ -147,7 +147,7 @@ class Acct :
   def account( self, sAcctDeb, sAcctCre, sAmount, sDate ) :
 
     self.miMov += 1
-    print( "accounting mov %d" % ( self.miMov ) )
+    print( "validating mov %d on file ..." % ( self.miMov ) )
     print( "amount %s, on %s(D) - %s(H)" % ( sAmount, sAcctDeb, sAcctCre ) )
     lfAmount = float( sAmount ) # checked before
 
@@ -170,6 +170,14 @@ class Acct :
 
     # sDate is OK, was checked before
     lDate = datetime.strptime( sDate, Acct.gsFmtDate )
+    # <, >= : 2n limit queda fora
+    if lDate < Acct.gTupDateRange[ 0 ] or lDate >= Acct.gTupDateRange[ 1 ] :
+      print( "mov with date %s, outside date range limits" % sDate )
+      print( "-" )
+      return
+
+    self.miMovAcct += 1
+    print( "accounting mov %d" % ( self.miMovAcct ) )
     if self.mDateIni == None : self.mDateIni = lDate
     else :
       if lDate < self.mDateIni : self.mDateIni = lDate
@@ -188,17 +196,23 @@ class Acct :
     lfPend = .0
     lfStok = .0
     lfExtl = .0
-    lsDateIni = self.mDateIni.strftime( Acct.gsFmtDate )
-    lsDateFin = self.mDateFin.strftime( Acct.gsFmtDate )
     print( "=========" )
     print( "BALANCES:" )
+    print( "=========" )
+    print( "total movements read file = %d" % self.miMov )
+    print( "total movements accounted = %d" % self.miMovAcct )
     if Acct.gTupDateRange == None :
       print( "NO date limit for movements set" )
     else :
       lsDate1 = Acct.gTupDateRange[ 0 ].strftime( Acct.gsFmtDate )
       lsDate2 = (Acct.gTupDateRange[ 1 ] - timedelta( days = 1 )).strftime( Acct.gsFmtDate )
       print( "date limit for movements : %s - %s" % ( lsDate1, lsDate2 ) )
-    print( "found movements from %s to %s" % ( lsDateIni, lsDateFin ) )
+    if self.miMovAcct > 0 :
+      lsDateIni = self.mDateIni.strftime( Acct.gsFmtDate )
+      lsDateFin = self.mDateFin.strftime( Acct.gsFmtDate )
+      print( "found movements from %s to %s" % ( lsDateIni, lsDateFin ) )
+    else :
+      print( "NO accounted movements" )
     lListKeys = self.mDictSaldo.keys()
     #print lListKeys
     lListKeys2 = sorted( lListKeys )
@@ -239,7 +253,6 @@ class Acct :
     for lsLine in self.mFile :
       liErrors += self.parseLine( lsLine )
     print( "file processed, lines with errors: %d" % liErrors )
-    print( "total movements = %d" % self.miMov )
 
 
   @staticmethod
