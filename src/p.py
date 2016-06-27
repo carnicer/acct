@@ -2,6 +2,7 @@
 #:
 #: usage: python p.py [<options>] <file>
 #: options:
+#: -s : initial balance file
 #: -d : date min/max/month/year
 #:   examples: 2016, 2016-04, 2016-04:2016-05, 2016-04-02:2016-04-08
 #:
