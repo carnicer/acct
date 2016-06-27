@@ -1,11 +1,40 @@
-#!/bin/python
+#: processes accounting movements from text file, and prints the balance
+#:
+#: usage: python p.py <file>
+#:
+#: can be called from any folder, and can use wrapper script p.sh
+#:
+#: file contains accounting movements with format ...
 from __future__ import print_function
 
 import sys
 import getopt
 from datetime import datetime, timedelta
 
+# TODO : allow reading data from stdin
+# TODO : only define in 1 place valid account types (use dict in displaySaldos)
+# TODO : add option to set initial and final dates to process
+# TODO : read balance with starting value for accounts
+
+
 class Acct :
+
+  @staticmethod
+  def usage() :
+    liLine = 0
+    print( "" )
+    print( sys.argv[ 0 ] )
+    lF = open( sys.argv[ 0 ], 'r' )
+    lbFirstComm = True
+    lsL = lF.readline()
+    while lsL and lbFirstComm == True :
+      liLine += 1
+      if lsL.startswith( "#:" ) :
+        print( lsL[ 3 : -1 ] )
+        lsL = lF.readline()
+      else :
+        break
+    lF.close()
 
   W_ACCT = 12
   W_AMOUNT = 12
@@ -173,6 +202,11 @@ class Acct :
 
 if __name__ == "__main__" :
 
+  # TODO : use stdin?
+  if len( sys.argv ) < 2 :
+    print( "FATAL: which file should I read from?" )
+    Acct.usage()
+    sys.exit( 1 )
   lAcct = Acct( sys.argv[ 1 ] )
   lAcct.inputLoop()
   lAcct.displaySaldos()
