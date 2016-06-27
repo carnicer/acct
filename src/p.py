@@ -44,6 +44,9 @@ class Acct :
   W_DATE = 10
   W_LINE = 2 * W_ACCT + W_AMOUNT + W_DATE
   gssTypes = ( 'S_', 'D_', 'C_', 'P_', 'F_', 'X_' ) # valid account name types
+
+  gsFmtYear = "%Y"
+  gsFmtMonth = "%Y-%m"
   gsFmtDate = "%Y-%m-%d"
   gsFmtDateUI = "yyyy-mm-dd"
 
@@ -232,6 +235,42 @@ class Acct :
 
 
   @staticmethod
+  def parseFlexDate( sDate ) :
+
+    lDate = None
+    # check in this order!
+    for lsFmt in ( Acct.gsFmtDate, Acct.gsFmtMonth, Acct.gsFmtYear ) :
+      try :
+        lDate = datetime.strptime( sDate, lsFmt )
+        print( "%s : is a %s date! => %s" % ( sDate, lsFmt, str( lDate ) ) )
+        break
+      except :
+        print( "%s : not a %s date" % ( sDate, lsFmt ) )
+        continue
+
+    return lDate
+
+
+  @staticmethod
+  def parseDates( sDates ) :
+
+    lDates = None # return value, default
+    lss = sDates.split( ':' )
+    liS = len( lss )
+    if liS == 1 : # 1 date (year/month)
+      lDate = Acct.parseFlexDate( lss[ 0 ] )
+      # TODO : add 1 day/month/year to 2nd date depending on len
+      lDates = ( lDate, lDate )
+    elif liS == 2 : # 2 dates (year/month)
+      pass
+    else : # > 2 dates => invalid
+      pass
+
+    return lDates
+
+
+
+  @staticmethod
   def checkOptions( pListParams ) :
 
     print( "checkOptions, args:", pListParams )
@@ -250,15 +289,14 @@ class Acct :
     #print( lList )
     for lOpt in lOptList :
       #print( 'lOpt :' + str( lOpt )
-      if lOpt[0] == '-t':
+      if lOpt[0] == '-d':
         lsVal = lOpt[1]
-        try :
-          liVal = int( lsVal )
-          self.miFormat = liVal
-        except :
-          Acct.eprint( 'FATAL: NON-numerical value for format type' )
+        lDateRange = Acct.parseDates( lsVal )
+        if lDateRange == None :
+          Acct.eprint( 'FATAL: Invalid date/date range' )
           Acct.usage()
           sys.exit( 1 )
+        print( "date range: %s - %s" % ( lDateRange[ 0 ], lDateRange[ 1 ] ) )
       if lOpt[0] == '-M':
         lsVal = lOpt[1]
         try :
