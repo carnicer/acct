@@ -41,6 +41,8 @@ class Acct :
   W_DATE = 10
   W_LINE = 2 * W_ACCT + W_AMOUNT + W_DATE
   gssTypes = ( 'S_', 'D_', 'C_', 'P_', 'F_', 'X_' ) # valid account name types
+  gsFmtDate = "%Y-%m-%d"
+  gsFmtDateUI = "yyyy-mm-dd"
 
   def __init__( self, sFile ) :
     try :
@@ -51,6 +53,8 @@ class Acct :
 
     self.miMov = 0
     self.mDictSaldo = {}
+    self.mDateIni = None
+    self.mDateFin = None
 
 
   @staticmethod
@@ -89,9 +93,16 @@ class Acct :
     liRet = 0 # OK, default
     liLen = len( sVal )
     if liLen > Acct.W_DATE :
-      liRet = 1
+      liRet += 1
       Acct.eprint( 'date %s too long (%d), max is %d' % ( sVal, liLen, Acct.W_AMOUNT ) )
     # TODO : check if ISO-format YYYY-MM-DD
+    try :
+      lDate = datetime.strptime( sVal, Acct.gsFmtDate )
+      #print( lDate.strftime( Acct.gsFmtDate ) )
+    except :
+      Acct.eprint( "%s not a valid date in %s format" % ( sVal, Acct.gsFmtDateUI ) )
+      liRet += 1
+      sys.exit( 2 )
     return liRet
 
   def parseLine( self, sLine0 ) :
@@ -146,11 +157,19 @@ class Acct :
     self.mDictSaldo[ sAcctCre ] = lfSaldo2
     print( "%12s : %9.2f => %9.2f" % ( sAcctCre, lfSaldo, lfSaldo2 ) )
 
-    # TODO : do something with sDate
+    # sDate is OK, was checked before
+    lDate = datetime.strptime( sDate, Acct.gsFmtDate )
+    if self.mDateIni == None : self.mDateIni = lDate
+    else :
+      if lDate < self.mDateIni : self.mDateIni = lDate
+    if self.mDateFin == None : self.mDateFin = lDate
+    else :
+      if lDate > self.mDateFin : self.mDateFin = lDate
+
     print( "--" )
     
 
-  # TODO : sumar total caixes i total people/players
+  # TODO rename to balance()
   def displaySaldos( self ) :
     lfGent = .0
     lfGone = .0
@@ -158,8 +177,11 @@ class Acct :
     lfPend = .0
     lfStok = .0
     lfExtl = .0
+    lsDateIni = self.mDateIni.strftime( Acct.gsFmtDate )
+    lsDateFin = self.mDateFin.strftime( Acct.gsFmtDate )
     print( "=========" )
     print( "BALANCES:" )
+    print( "found movements from %s to %s" % ( lsDateIni, lsDateFin ) )
     lListKeys = self.mDictSaldo.keys()
     #print lListKeys
     lListKeys2 = sorted( lListKeys )
@@ -169,6 +191,7 @@ class Acct :
       lfSaldo = self.mDictSaldo[ lsAcct ]
       print( "%-12s : %9.2f" % ( lsAcct, lfSaldo ) )
       lsAcctType = lsAcct[ 0 : 2 ]
+      # TODO : use a dictionary for this
       if lsAcctType == "C_" : # caixa
         lfCash += lfSaldo
       elif lsAcctType == "D_" : # despesa
