@@ -222,7 +222,7 @@ class Acct :
       elif lsAcctType == "X_" : # eXternal
         lfExtl += lfSaldo
       else :
-        eprint( "unknown acct type '%s'" % lsAcctType )
+        Acct.eprint( "unknown acct type '%s'" % lsAcctType )
         sys.exit( 1 )
     print( "=========" )
     print( "%-12s : %9.2f" % ( "total stock",  lfStok ) )
@@ -279,9 +279,10 @@ class Acct :
           if not lDate == None :
             lList.append( lDate )
       else :
-        eprint( "FATAL: date range is not formed by 2 equal-length/format" )
+        Acct.eprint( "FATAL: date range is not formed by 2 equal-length/format" )
             
     if len( lList ) == 2 :
+      lDate0 = lList[ 0 ]
       liLen = len( lss[ 0 ] )
       if liLen == 10 :
         lTimeDelta = timedelta( days = 1 )
@@ -296,7 +297,10 @@ class Acct :
         lDate2 = lDate1.replace( year = lDate.year + 1 )
       elif liLen == 4 :
         lDate2 = lDate.replace( year = lDate.year + 1 )
-      lDates = tuple( ( lList[ 0 ], lDate2 ) )
+      if lDate0 >= lDate2 :
+        Acct.eprint( "FATAL: date range start is later than end" )
+      else :
+        lDates = tuple( ( lDate0, lDate2 ) )
     return lDates
 
 
