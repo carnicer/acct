@@ -50,6 +50,7 @@ class Acct :
   gsFmtDate = "%Y-%m-%d"
   gsFmtDateUI = "yyyy-mm-dd"
 
+
   def __init__( self, sFile = None ) :
     if sFile == None :
       self.mFile = sys.stdin
@@ -191,6 +192,12 @@ class Acct :
     lsDateFin = self.mDateFin.strftime( Acct.gsFmtDate )
     print( "=========" )
     print( "BALANCES:" )
+    if Acct.gTupDateRange == None :
+      print( "NO date limit for movements set" )
+    else :
+      lsDate1 = Acct.gTupDateRange[ 0 ].strftime( Acct.gsFmtDate )
+      lsDate2 = (Acct.gTupDateRange[ 1 ] - timedelta( days = 1 )).strftime( Acct.gsFmtDate )
+      print( "date limit for movements : %s - %s" % ( lsDate1, lsDate2 ) )
     print( "found movements from %s to %s" % ( lsDateIni, lsDateFin ) )
     lListKeys = self.mDictSaldo.keys()
     #print lListKeys
@@ -224,6 +231,7 @@ class Acct :
     print( "%-12s : %9.2f" % ( "total desp",   lfGone ) )
     print( "%-12s : %9.2f" % ( "total credit", lfPend ) )
     print( "%-12s : %9.2f" % ( "total cash",   lfCash ) )
+
 
   def inputLoop( self ) :
     liErrors = 0
@@ -310,6 +318,7 @@ class Acct :
 
     #print( lOptList )
     #print( lList )
+    lDateRange = None
     for lOpt in lOptList :
       #print( 'lOpt :' + str( lOpt )
       if lOpt[0] == '-d':
