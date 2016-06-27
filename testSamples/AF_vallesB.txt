@@ -7,7 +7,7 @@ P_MAR       S_EQUIP          20.00  2016-03-01 # aportacio inicial capital
 P_GIGI      S_EQUIP          20.00  2016-03-01 # aportacio inicial capital
 P_BERTAC    S_EQUIP          20.00  2016-03-01 # aportacio inicial capital
 P_ANNA      S_EQUIP          20.00  2016-03-01 # aportacio inicial capital
-P_BERTAG    S_EQUIP          20.00  2016-03-11 # aportacio inicial capital
+P_BERTAG    S_EQUIP          20.00  2016-03-01 # aportacio inicial capital
 P_RITA      S_EQUIP          20.00  2016-03-01 # aportacio inicial capital
 
 C_POT       P_PAULA          40.00  2016-03-05 # paula paga 50 esmorzar, 40 pot
