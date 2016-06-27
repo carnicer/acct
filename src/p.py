@@ -52,17 +52,7 @@ class Acct :
   gsFmtDateUI = "yyyy-mm-dd"
 
 
-  def __init__( self, sFile = None ) :
-    self.msFile = sFile
-    if sFile == None :
-      self.mFile = sys.stdin
-      print( "reading from stdin" )
-    else :
-     try :
-      self.mFile = open( sFile )
-     except :
-      print( "FATAL, could not open file " + sFile )
-      sys.exit( 1 )
+  def __init__( self ) :
 
     self.miMov = 0
     self.miMovAcct = 0
@@ -295,13 +285,23 @@ class Acct :
     print( "%-12s : %9.2f" % ( "total cash",   lfCash ) )
 
 
-  def inputLoop( self ) :
+  def inputLoop( self, sFile = None ) :
+    if sFile == None :
+      self.mFile = sys.stdin
+      print( "reading from stdin" )
+    else :
+      try :
+        self.mFile = open( sFile )
+      except :
+        print( "FATAL, could not open file " + sFile )
+        sys.exit( 1 )
+
     liErrors = 0
     print( "----------" )
     for lsLine in self.mFile :
       liErrors += self.parseLine( lsLine )
     print( "file processed, lines with errors: %d" % liErrors )
-    if not self.msFile == None :
+    if not sFile == None :
       self.mFile.close()
 
 
@@ -435,14 +435,14 @@ class Acct :
 if __name__ == "__main__" :
 
   Acct.checkOptions( sys.argv[ 1 : ] )
-  if len( Acct.gsFiles ) == 0 :
-    # use stdin
-    lAcct = Acct()
-  else :
-    # TODO : process more than 1 movs file (for)
-    lAcct = Acct( Acct.gsFiles[ 0 ] )
+  lAcct = Acct()
   if not Acct.gsFileInitialBalance == None :
     lAcct.readBalance( Acct.gsFileInitialBalance )
-  lAcct.inputLoop()
+  if len( Acct.gsFiles ) == 0 :
+    # use stdin
+    lAcct.inputLoop()
+  else :
+    for lsFile in Acct.gsFiles :
+      lAcct.inputLoop( lsFile )
   lAcct.displaySaldos()
 
