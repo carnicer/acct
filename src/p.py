@@ -1,6 +1,9 @@
 #: processes accounting movements from text file, and prints the balance
 #:
-#: usage: python p.py <file>
+#: usage: python p.py [<options>] <file>
+#: options:
+#: -d : date min/max/month/year
+#:   examples: 2016, 2016-04, 2016-04:2016-05, 2016-04-02:2016-04-08
 #:
 #: can be called from any folder, and can use wrapper script p.sh
 #:
@@ -14,6 +17,7 @@ from datetime import datetime, timedelta
 # TODO : only define in 1 place valid account types (use dict in displaySaldos)
 # TODO : add option to set initial and final dates to process
 # TODO : read balance with starting value for accounts
+# TODO : process more than 1 movs file
 
 
 class Acct :
@@ -227,13 +231,59 @@ class Acct :
     print( "total movements = %d" % self.miMov )
 
 
+  @staticmethod
+  def checkOptions( pListParams ) :
+
+    print( "checkOptions, args:", pListParams )
+    try:
+      lOptList, lList = getopt.getopt( pListParams, 'd:' )
+
+    except getopt.GetoptError:
+      Acct.eprint( "FATAL : error analyzing command line options" )
+      Acct.eprint( "" )
+      Acct.usage()
+      sys.exit( 1 )
+
+    # TODO : use shift / setenv --
+
+    #print( lOptList )
+    #print( lList )
+    for lOpt in lOptList :
+      #print( 'lOpt :' + str( lOpt )
+      if lOpt[0] == '-t':
+        lsVal = lOpt[1]
+        try :
+          liVal = int( lsVal )
+          self.miFormat = liVal
+        except :
+          Acct.eprint( 'FATAL: NON-numerical value for format type' )
+          Acct.usage()
+          sys.exit( 1 )
+      if lOpt[0] == '-M':
+        lsVal = lOpt[1]
+        try :
+          liVal = int( lsVal )
+          self.miMaxDY = liVal
+        except :
+          Acct.eprint( 'FATAL: NON-numerical value for Max DY (Y diff)' )
+          Acct.usage()
+          sys.exit( 1 )
+          # TODO : only-1 exit point
+
+    Acct.gsFiles = lList
+    Acct.gTupDateRange = lDateRange
+
+
 if __name__ == "__main__" :
 
-  if len( sys.argv ) < 2 :
+  if len( sys.argv ) > 1 :
+    Acct.checkOptions( sys.argv[ 1 : ] )
+  if len( Acct.gsFiles ) == 0 :
     # use stdin
     lAcct = Acct()
   else :
-    lAcct = Acct( sys.argv[ 1 ] )
+    # TODO : process more than 1 movs file (for)
+    lAcct = Acct( Acct.gsFiles[ 0 ] )
   lAcct.inputLoop()
   lAcct.displaySaldos()
 
