@@ -42,6 +42,8 @@ class Acct :
   W_AMOUNT = 12
   W_DATE = 10
   W_LINE = 2 * W_ACCT + W_AMOUNT + W_DATE
+  W_BAL_LINE = 24
+
   gssTypes = ( 'S_', 'D_', 'C_', 'P_', 'F_', 'X_' ) # valid account name types
 
   gsFmtYear = "%Y"
@@ -51,6 +53,7 @@ class Acct :
 
 
   def __init__( self, sFile = None ) :
+    self.msFile = sFile
     if sFile == None :
       self.mFile = sys.stdin
       print( "reading from stdin" )
@@ -116,6 +119,33 @@ class Acct :
       sys.exit( 2 )
     return liRet
 
+
+  def parseBalLine( self, sLine0 ) :
+    liRet = 0 # OK
+    if sLine0[ 0 ] == "=" : # separator, discard this line
+      return liRet
+    # discard comment
+    sLine = sLine0.split( '#' )[ 0 ]
+    liLen = len( sLine )
+    if liLen <= 1 : pass # OK, empty or comment line
+    elif liLen < Acct.W_BAL_LINE :
+      print( "line lenght %d not enough, minimum %d" % ( liLen, Acct.W_BAL_LINE ) )
+      liRet = 1
+    else : # now a real line
+      lss = sLine.split( ":" )
+      lsAcctDeb = lss[ 0 ].strip()
+      lsAmount  = lss[ 1 ].lstrip().strip()
+      liRet += Acct.valAcct( lsAcctDeb )
+      liRet += Acct.valAmnt( lsAmount )
+      if liRet > 0 :
+        Acct.eprint( "FATAL. rejected balance line, contains %d format/content errors" )
+        liRet = 1 # meaning 1 line with errors
+        sys.exit( 1 )
+      else :
+        self.accountIni( lsAcctDeb, lsAmount )
+    return liRet
+
+
   def parseLine( self, sLine0 ) :
     liRet = 0 # OK
     # discard comment
@@ -139,9 +169,23 @@ class Acct :
         Acct.eprint( "FATAL. rejected line, contains %d format/content errors" )
         liRet = 1 # meaning 1 line with errors
         sys.exit( 1 )
-      else :
-        self.account( lsAcctDeb, lsAcctCre, lsAmount, lsDate )
+      self.account( lsAcctDeb, lsAcctCre, lsAmount, lsDate )
     return liRet
+
+
+  def accountIni( self, sAcctDeb, sAmount ) :
+
+    print( "INI amount :%s:, on %s" % ( sAmount, sAcctDeb ) )
+    lfAmount = float( sAmount ) # checked before
+
+    try :
+      lfSaldo = self.mDictSaldo[ sAcctDeb ]
+      Acct.eprint( "FATAL, duplicate initial for account %s", sAcctDeb )
+      sys.exit( 1 )
+    except :
+      lfSaldo = lfAmount
+    self.mDictSaldo[ sAcctDeb ] = lfSaldo
+    print( "%12s : %9.2f " % ( sAcctDeb, lfSaldo ) )
 
 
   def account( self, sAcctDeb, sAcctCre, sAmount, sDate ) :
@@ -257,6 +301,24 @@ class Acct :
     for lsLine in self.mFile :
       liErrors += self.parseLine( lsLine )
     print( "file processed, lines with errors: %d" % liErrors )
+    if not self.msFile == None :
+      self.mFile.close()
+
+
+  def readBalance( self, sFile ) :
+    print( "----" )
+    print( "reading balance file " + sFile )
+    try :
+      lFile = open( sFile, "r" )
+    except :
+      lFile = open( sFile, "r" )
+      print( "FATAL, could not open balance file " + sFile )
+      sys.exit( 1 )
+    liErrors = 0
+    for lsLine in lFile :
+      liErrors += self.parseBalLine( lsLine )
+    print( "balance file processed, lines with errors: %d" % liErrors )
+    lFile.close()
 
 
   @staticmethod
@@ -327,7 +389,7 @@ class Acct :
 
     print( "checkOptions, args:", pListParams )
     try:
-      lOptList, lList = getopt.getopt( pListParams, 'd:' )
+      lOptList, lList = getopt.getopt( pListParams, 'd:i:' )
 
     except getopt.GetoptError:
       Acct.eprint( "FATAL : error analyzing command line options" )
@@ -337,6 +399,7 @@ class Acct :
 
     # TODO : use shift / setenv --
 
+    Acct.gsFileInitialBalance = None
     #print( lOptList )
     #print( lList )
     lDateRange = None
@@ -350,6 +413,10 @@ class Acct :
           Acct.usage()
           sys.exit( 1 )
         print( "date range: %s - %s" % ( lDateRange[ 0 ], lDateRange[ 1 ] ) )
+      if lOpt[0] == '-i':
+        lsVal = lOpt[1]
+        Acct.gsFileInitialBalance = lsVal
+        print( "initial balance file : %s" % Acct.gsFileInitialBalance )
       if lOpt[0] == '-M':
         lsVal = lOpt[1]
         try :
@@ -374,6 +441,8 @@ if __name__ == "__main__" :
   else :
     # TODO : process more than 1 movs file (for)
     lAcct = Acct( Acct.gsFiles[ 0 ] )
+  if not Acct.gsFileInitialBalance == None :
+    lAcct.readBalance( Acct.gsFileInitialBalance )
   lAcct.inputLoop()
   lAcct.displaySaldos()
 
