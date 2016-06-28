@@ -234,9 +234,11 @@ class Acct :
     lfPend = .0
     lfStok = .0
     lfExtl = .0
-    print( "=========" )
+    lsSepTitle = "========="
+    lsSepSaldo = "========================"
+    print( lsSepTitle )
     print( "BALANCES:" )
-    print( "=========" )
+    print( lsSepTitle )
     print( "total movements read file = %d" % self.miMov )
     print( "total movements accounted = %d" % self.miMovAcct )
     if Acct.gTupDateRange == None :
@@ -255,7 +257,7 @@ class Acct :
     #print lListKeys
     lListKeys2 = sorted( lListKeys )
     #print lListKeys2
-    print( "=========" )
+    print( lsSepSaldo )
     for lsAcct in lListKeys2 :
       # no need to try:
       lfSaldo = self.mDictSaldo[ lsAcct ]
@@ -277,7 +279,7 @@ class Acct :
       else :
         Acct.eprint( "unknown acct type '%s'" % lsAcctType )
         sys.exit( 1 )
-    print( "=========" )
+    print( lsSepSaldo )
     print( "%-12s : %9.2f" % ( "total stock",  lfStok ) )
     print( "%-12s : %9.2f" % ( "total people", lfGent ) )
     print( "%-12s : %9.2f" % ( "total xtrnal", lfExtl ) )
