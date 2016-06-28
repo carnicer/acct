@@ -1,0 +1,12 @@
+=========
+S_EQUIP      :   -180.00
+P_PAULA      :     20.00
+P_CLARAH     :     20.00
+P_CLARAM     :     20.00
+P_MAR        :     20.00
+P_GIGI       :     20.00
+P_BERTAC     :     20.00
+P_ANNA       :     20.00
+P_BERTAG     :     20.00
+P_RITA       :     20.00
+=========

@@ -1,15 +1,5 @@
 # deure --- haver ----- import ---- data ----- # comments -----
 
-P_PAULA     S_EQUIP          20.00  2016-03-01 # aportacio inicial capital
-P_CLARAH    S_EQUIP          20.00  2016-03-01 # aportacio inicial capital
-P_CLARAM    S_EQUIP          20.00  2016-03-01 # aportacio inicial capital
-P_MAR       S_EQUIP          20.00  2016-03-01 # aportacio inicial capital
-P_GIGI      S_EQUIP          20.00  2016-03-01 # aportacio inicial capital
-P_BERTAC    S_EQUIP          20.00  2016-03-01 # aportacio inicial capital
-P_ANNA      S_EQUIP          20.00  2016-03-01 # aportacio inicial capital
-P_BERTAG    S_EQUIP          20.00  2016-03-01 # aportacio inicial capital
-P_RITA      S_EQUIP          20.00  2016-03-01 # aportacio inicial capital
-
 C_POT       P_PAULA          40.00  2016-03-05 # paula paga 50 esmorzar, 40 pot
 C_DELEGAT   C_POT            40.00  2016-03-05 # delegat agafa pot
 C_DELEGAT   P_CLARAH         20.00  2016-04-02 # pot

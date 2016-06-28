@@ -15,7 +15,7 @@ import sys
 import getopt
 from datetime import datetime, timedelta
 
-# TODO : only define in 1 place valid account types (use dict in displaySaldos)
+# TODO : only define in 1 place valid account types (use dict in balance)
 # TODO : read balance with starting value for accounts
 # TODO : process more than 1 movs file
 
@@ -227,16 +227,18 @@ class Acct :
     
 
   # TODO rename to balance()
-  def displaySaldos( self ) :
+  def balance( self ) :
     lfGent = .0
     lfGone = .0
     lfCash = .0
     lfPend = .0
     lfStok = .0
     lfExtl = .0
-    print( "=========" )
+    lsSepTitle = "========="
+    lsSepSaldo = "========================"
+    print( lsSepTitle )
     print( "BALANCES:" )
-    print( "=========" )
+    print( lsSepTitle )
     print( "total movements read file = %d" % self.miMov )
     print( "total movements accounted = %d" % self.miMovAcct )
     if Acct.gTupDateRange == None :
@@ -255,7 +257,7 @@ class Acct :
     #print lListKeys
     lListKeys2 = sorted( lListKeys )
     #print lListKeys2
-    print( "=========" )
+    print( lsSepSaldo )
     for lsAcct in lListKeys2 :
       # no need to try:
       lfSaldo = self.mDictSaldo[ lsAcct ]
@@ -277,7 +279,7 @@ class Acct :
       else :
         Acct.eprint( "unknown acct type '%s'" % lsAcctType )
         sys.exit( 1 )
-    print( "=========" )
+    print( lsSepSaldo )
     print( "%-12s : %9.2f" % ( "total stock",  lfStok ) )
     print( "%-12s : %9.2f" % ( "total people", lfGent ) )
     print( "%-12s : %9.2f" % ( "total xtrnal", lfExtl ) )
@@ -286,11 +288,12 @@ class Acct :
     print( "%-12s : %9.2f" % ( "total cash",   lfCash ) )
 
 
-  def inputLoop( self, sFile = None ) :
+  def readMovs( self, sFile = None ) :
     if sFile == None :
       self.mFile = sys.stdin
       print( "reading from stdin" )
     else :
+      print( "reading from file %s" % sFile )
       try :
         self.mFile = open( sFile )
       except :
@@ -441,9 +444,9 @@ if __name__ == "__main__" :
     lAcct.readBalance( Acct.gsFileInitialBalance )
   if len( Acct.gsFiles ) == 0 :
     # use stdin
-    lAcct.inputLoop()
+    lAcct.readMovs()
   else :
     for lsFile in Acct.gsFiles :
-      lAcct.inputLoop( lsFile )
-  lAcct.displaySaldos()
+      lAcct.readMovs( lsFile )
+  lAcct.balance()
 
