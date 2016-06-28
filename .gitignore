@@ -1,4 +1,6 @@
 *.swp
+testSamples/*_out.txt
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
